@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package adminpanel;
+
+message User {
+  int64 id = 1;
+  string email = 2;
+  string role = 3;
+  string status = 4;
+  string createdAt = 5;
+  bytes emailHash = 6;       // SHA-384 hash bytes
+  bytes signature = 7;       // signature bytes
+}
+
+message UsersList {
+  repeated User users = 1;
+}
