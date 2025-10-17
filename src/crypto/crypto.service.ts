@@ -44,6 +44,14 @@ export class CryptoService implements OnModuleInit {
     return signature;
   }
 
+  // Prefer signing the original email with RSA-PSS and SHA-384 for compatibility
+  signEmail(email: string): Buffer {
+    const signer = crypto.createSign('sha384');
+    signer.update(email, 'utf8');
+    signer.end();
+    return signer.sign({ key: this.privateKeyPem, padding: crypto.constants.RSA_PKCS1_PSS_PADDING });
+  }
+
   getPublicKeyPem(): string {
     return this.publicKeyPem;
   }

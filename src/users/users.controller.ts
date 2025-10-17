@@ -62,23 +62,8 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
-  }
-
-  /** Exports all users serialized in protobuf format */
-  @Get('export/protobuf')
+  @Get('export')
   async exportProtobuf(@Res() res: Response) {
     if (!this.UsersListMessage) {
       throw new InternalServerErrorException('Proto not loaded yet');
@@ -92,7 +77,14 @@ export class UsersController {
       email: u.email,
       role: u.role,
       status: u.status,
-      createdAt: u.createdAt?.toISOString?.() ?? new Date().toISOString(),
+      // google.protobuf.Timestamp expects seconds and nanos
+      createdAt: (() => {
+        const date = u.createdAt instanceof Date ? u.createdAt : new Date(u.createdAt as unknown as string);
+        const ms = date.getTime();
+        const seconds = Math.floor(ms / 1000);
+        const nanos = (ms % 1000) * 1000000;
+        return { seconds, nanos };
+      })(),
       emailHash: u.emailHash ? Buffer.from(u.emailHash, 'base64') : Buffer.alloc(0),
       signature: u.signature ? Buffer.from(u.signature, 'base64') : Buffer.alloc(0),
     }));
@@ -112,4 +104,26 @@ export class UsersController {
     res.setHeader('Content-Disposition', 'attachment; filename=users.pb');
     res.send(Buffer.from(buffer));
   }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(+id, updateUserDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(+id);
+  }
+
+  /** Users created per day over the last 7 days */
+  @Get('stats/last7days')
+  async statsLast7Days() {
+    return this.usersService.getCountsLast7Days();
+  }
+
+  /** Exports all users serialized in protobuf format */
 }
