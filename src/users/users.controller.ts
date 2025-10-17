@@ -125,5 +125,4 @@ export class UsersController {
     return this.usersService.getCountsLast7Days();
   }
 
-  /** Exports all users serialized in protobuf format */
 }
