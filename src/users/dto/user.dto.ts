@@ -5,7 +5,7 @@ export class UserDto {
   @ApiProperty({ example: 'john@example.com' })
   email: string;
 
-  @ApiProperty({ example: 'John Doe' })
+  @ApiProperty({ example: 'Developer' })
   role: string;
 
   @ApiProperty({ example: 'active' })
