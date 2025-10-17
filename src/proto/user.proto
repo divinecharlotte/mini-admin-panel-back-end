@@ -1,0 +1,18 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+package adminpanel;
+
+message User {
+  int64 id = 1;
+  string email = 2;
+  string role = 3;
+  string status = 4;
+ google.protobuf.Timestamp createdAt = 5;
+  bytes emailHash = 6;       // SHA-384 hash bytes
+  bytes signature = 7;       // signature bytes
+}
+
+message UsersList {
+  repeated User users = 1;
+}
