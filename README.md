@@ -26,7 +26,7 @@ $ npm run start
 $ npm run start:dev
 
 # Swagger link
-http://localhost:3000/ap
+http://localhost:3000/api
 
 ```
 
